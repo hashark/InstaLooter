@@ -88,15 +88,17 @@ class InstaLooter(object):
             ~requests.Session: an initialised session instance.
 
         """
-        session = session or Session()
-        # Load cookies
-        session.cookies = LWPCookieJar(
-            cls._cachefs.getsyspath(cls._COOKIE_FILE))
-        try:
-            typing.cast(FileCookieJar, session.cookies).load()
-        except IOError:
-            pass
-        typing.cast(FileCookieJar, session.cookies).clear_expired_cookies()
+        if session is None:
+            session = Session()
+            # Load cookies
+            session.cookies = LWPCookieJar(
+                cls._cachefs.getsyspath(cls._COOKIE_FILE))
+            try:
+                typing.cast(FileCookieJar, session.cookies).load()
+            except IOError:
+                pass
+            typing.cast(FileCookieJar, session.cookies).clear_expired_cookies()
+            
         return session
 
     @classmethod
