@@ -163,6 +163,8 @@ class ProfileIterator(PageIterator):
     def from_username(cls, username, session):
         user_data = cls._user_data(username, session)
         if 'ProfilePage' not in user_data['entry_data']:
+            if 'LoginAndSignupPage' in user_data['entry_data']:
+                raise RuntimeError('Login is required.')
             raise ValueError("user not found: '{}'".format(username))
         data = user_data['entry_data']['ProfilePage'][0]['graphql']['user']
         if data['is_private'] and not data['followed_by_viewer']:
