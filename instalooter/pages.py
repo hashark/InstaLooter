@@ -183,3 +183,14 @@ class ProfileIterator(PageIterator):
             "first": self.PAGE_SIZE,
             "after": cursor,
         }
+
+
+class ProfileTaggedMediaIterator(ProfileIterator):
+    """An iterator over the pages of a user profile.
+    """
+
+    _QUERY_HASH = "31fe64d9463cbbe58319dced405c6206"
+    #_QUERY_HASH = "472f257a40c653c64c666ce877d59d2b"
+    _URL = "{}?query_hash={}&variables={{}}".format(PageIterator._BASE_URL, _QUERY_HASH)
+    _section_generic = "user"
+    _section_media = "edge_user_to_photos_of_you"

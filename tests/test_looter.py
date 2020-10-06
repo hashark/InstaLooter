@@ -45,6 +45,16 @@ class TestInstaLooter(unittest.TestCase):
         self.assertGreaterEqual(len(self.destfs.listdir("/")), self.MEDIA_COUNT)
 
     @parameterized.parameterized.expand([
+        parameterized.param("instagram", ),
+        parameterized.param("instagram", get_videos=True),
+        # parameterized.param("serotonine",),
+    ], testcase_func_name=signature)
+    def test_profile_tagged_posts(self, profile, **kwargs):
+        looter = ProfileLooter(profile, session=self.session, **kwargs)
+        looter.download(self.destfs, media_count=self.MEDIA_COUNT)
+        self.assertGreaterEqual(len(self.destfs.listdir("/")), self.MEDIA_COUNT)
+
+    @parameterized.parameterized.expand([
         parameterized.param("eggs"),
         parameterized.param("python", videos_only=True),
     ], testcase_func_name=signature)

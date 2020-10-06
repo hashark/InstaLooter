@@ -40,9 +40,7 @@ class TestLogin(unittest.TestCase):
             self.looter.logout()
             self.assertFalse(self.looter._cachefs.exists(self.looter._COOKIE_FILE))
 
-
     def test_download(self):
-
         try:
             self.looter.login(USERNAME, PASSWORD)
             self.looter.download(self.destfs)

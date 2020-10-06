@@ -26,7 +26,7 @@ from . import __author__, __name__ as __appname__, __version__
 from ._impl import length_hint, json
 from ._utils import NameGenerator, CachedClassProperty, get_shared_data
 from .medias import TimedMediasIterator, MediasIterator
-from .pages import ProfileIterator, HashtagIterator
+from .pages import ProfileIterator, HashtagIterator, ProfileTaggedMediaIterator
 from .pbar import ProgressBar
 from .worker import InstaDownloader
 
@@ -46,6 +46,7 @@ __all__ = [
     "ProfileLooter",
     "HashtagLooter",
     "PostLooter",
+    "ProfileTaggedMediaIterator"
 ]
 
 
@@ -715,6 +716,26 @@ class ProfileLooter(InstaLooter):
             self._owner_id = it.owner_id
             return it
         return ProfileIterator(self._owner_id, self.session, self.rhx)
+
+    def tagged_posts(self):
+        # type: () -> ProfileTaggedMediaIterator
+        """Obtain an iterator over Instagram tagged post pages.
+
+        Returns:
+            PageIterator: an iterator over the instagram tagged post pages.
+
+        Raises:
+            ValueError: when the requested user does not exist.
+            RuntimeError: when the user is a private account
+                and there is no logged user (or the logged user
+                does not follow that account).
+
+        """
+        if self._owner_id is None:
+            it = ProfileIterator.from_username(self._username, self.session)
+            self._owner_id = it.owner_id
+            return it
+        return ProfileTaggedMediaIterator(self._owner_id, self.session, self.rhx)
 
 
 class HashtagLooter(InstaLooter):
