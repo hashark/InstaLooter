@@ -732,7 +732,7 @@ class ProfileLooter(InstaLooter):
 
         """
         if self._owner_id is None:
-            it = ProfileIterator.from_username(self._username, self.session)
+            it = ProfileTaggedMediaIterator.from_username(self._username, self.session)
             self._owner_id = it.owner_id
             return it
         return ProfileTaggedMediaIterator(self._owner_id, self.session, self.rhx)

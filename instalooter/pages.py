@@ -123,8 +123,8 @@ class HashtagIterator(PageIterator):
     """An iterator over the pages refering to a specific hashtag.
     """
 
-    _QUERY_ID = "17882293912014529"
-    _URL = "{}?query_id={}&variables={{}}".format(PageIterator._BASE_URL, _QUERY_ID)
+    _QUERY_HASH = "9b498c08113f1e09617a1703c22b2f32"
+    _URL = "{}?query_hash={}&variables={{}}".format(PageIterator._BASE_URL, _QUERY_HASH)
     _section_generic = "hashtag"
     _section_media = "edge_hashtag_to_media"
 
@@ -138,7 +138,6 @@ class HashtagIterator(PageIterator):
             "first": self.PAGE_SIZE,
             "after": cursor
         }
-
 
 class ProfileIterator(PageIterator):
     """An iterator over the pages of a user profile.
@@ -196,3 +195,28 @@ class ProfileTaggedMediaIterator(ProfileIterator):
     _URL = "{}?query_hash={}&variables={{}}".format(PageIterator._BASE_URL, _QUERY_HASH)
     _section_generic = "user"
     _section_media = "edge_user_to_photos_of_you"
+
+    @classmethod
+    def _user_data(cls, username, session):
+        url = "https://www.instagram.com/{}/".format(username)
+        try:
+            with session.get(url) as res:
+                return get_shared_data(res.text)
+        except (ValueError, AttributeError):
+            raise ValueError("user not found: '{}'".format(username))
+
+    @classmethod
+    def from_username(cls, username, session):
+        user_data = cls._user_data(username, session)
+        if 'ProfilePage' not in user_data['entry_data']:
+            if 'LoginAndSignupPage' in user_data['entry_data']:
+                raise RuntimeError('Login is required.')
+            if 'Challenge' in user_data['entry_data']:
+                raise RuntimeError('Challenge detected.')
+            raise ValueError("user not found: '{}'".format(username))
+        data = user_data['entry_data']['ProfilePage'][0]['graphql']['user']
+        if data['is_private'] and not data['followed_by_viewer']:
+            con_id = next((c.value for c in session.cookies if c.name == "ds_user_id"), None)
+            if con_id != data['id']:
+                raise RuntimeError("user '{}' is private".format(username))
+        return cls(data['id'], session, user_data.get('rhx_gis', ''))
