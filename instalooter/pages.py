@@ -36,7 +36,7 @@ class PageIterator(typing.Iterator[typing.Dict[typing.Text, typing.Any]]):
     PAGE_SIZE = 50
     INTERVAL = 2
 
-    _BASE_URL = "https://www.instagram.com/graphql/query/"
+    _BASE_URL = "http://www.instagram.com/graphql/query/"
     _section_generic = NotImplemented    # type: Text
     _section_media = NotImplemented      # type: Text
 
@@ -151,7 +151,7 @@ class ProfileIterator(PageIterator):
 
     @classmethod
     def _user_data(cls, username, session):
-        url = "https://www.instagram.com/{}/".format(username)
+        url = "http://www.instagram.com/{}/".format(username)
         try:
             with session.get(url) as res:
                 return get_shared_data(res.text)
@@ -198,7 +198,7 @@ class ProfileTaggedMediaIterator(ProfileIterator):
 
     @classmethod
     def _user_data(cls, username, session):
-        url = "https://www.instagram.com/{}/".format(username)
+        url = "http://www.instagram.com/{}/".format(username)
         try:
             with session.get(url) as res:
                 return get_shared_data(res.text)
