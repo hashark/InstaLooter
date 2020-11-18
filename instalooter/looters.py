@@ -277,7 +277,7 @@ class InstaLooter(object):
             self.session.headers['User-Agent'] = self._user_agents.firefox
 
         # Get CSRFToken and RHX
-        with self.session.get('https://www.instagram.com/') as res:
+        with self.session.get('http://www.instagram.com/') as res:
             token = get_shared_data(res.text)['config']['csrf_token']
             self.session.headers['X-CSRFToken'] = token
             self.rhx = get_shared_data(res.text).get('rhx_gis','')
