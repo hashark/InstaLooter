@@ -71,6 +71,11 @@ class PageIterator(typing.Iterator[typing.Dict[typing.Text, typing.Any]]):
                 # Yield that same data until cursor is updated
                 while self._cursor == cursor:
                     yield data['data']
+            except Exception as e:
+                if str(e).find('BadStatusLine') >= 0:
+                    continue
+                else:
+                    raise e
             except KeyError as e:
                 if data.get('message') == 'rate limited':
                     raise RuntimeError("Query rate exceeded (wait before next run)")
