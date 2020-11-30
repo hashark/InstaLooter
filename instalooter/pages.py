@@ -10,7 +10,7 @@ import itertools
 import math
 import time
 import typing
-
+import logging
 import six
 from requests import Session
 
@@ -26,6 +26,8 @@ __all__ = [
     "HashtagIterator",
     "ProfileIterator",
 ]
+
+logger = logging.getLogger()
 
 
 @six.add_metaclass(abc.ABCMeta)
@@ -75,6 +77,7 @@ class PageIterator(typing.Iterator[typing.Dict[typing.Text, typing.Any]]):
                 if str(e).find('BadStatusLine') >= 0:
                     continue
                 else:
+                    logger.exception('Error getting data')
                     raise e
             except KeyError as e:
                 if data.get('message') == 'rate limited':
