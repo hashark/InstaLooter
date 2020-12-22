@@ -74,7 +74,8 @@ class PageIterator(typing.Iterator[typing.Dict[typing.Text, typing.Any]]):
                 while self._cursor == cursor:
                     yield data['data']
             except Exception as e:
-                if str(e).find('BadStatusLine') >= 0:
+                message = str(e)
+                if message.find('BadStatusLine') >= 0 or message.find('ChunkedEncodingError') >= 0:
                     continue
                 else:
                     logger.exception('Error getting data')
