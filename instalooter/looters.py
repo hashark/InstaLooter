@@ -30,6 +30,10 @@ from .pages import ProfileIterator, HashtagIterator, ProfileTaggedMediaIterator
 from .pbar import ProgressBar
 from .worker import InstaDownloader
 
+
+class UnexpectedExceptionWhenConnectedToInstagram(Exception):
+    pass
+
 if typing.TYPE_CHECKING:
     from datetime import datetime
     from typing import (
@@ -278,6 +282,8 @@ class InstaLooter(object):
 
         # Get CSRFToken and RHX
         with self.session.get('http://www.instagram.com/') as res:
+            if res.status_code >=400:
+                raise UnexpectedExceptionWhenConnectedToInstagram("response status code: %s" %str(res.status_code))
             token = get_shared_data(res.text)['config']['csrf_token']
             self.session.headers['X-CSRFToken'] = token
             self.rhx = get_shared_data(res.text).get('rhx_gis','')
